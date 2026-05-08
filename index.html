@@ -130,24 +130,21 @@
         <label>카테고리 *</label>
         <select id="req-category">
           <option value="">카테고리 선택</option>
-          <option>개발</option>
-          <option>데이터/AI</option>
-          <option>인프라/DevOps</option>
-          <option>리더십/조직</option>
-          <option>커리어/성장</option>
-          <option>비즈니스/전략</option>
-          <option>영업/마케팅</option>
-          <option>디자인</option>
-          <option>기타</option>
+          <option>개발</option><option>데이터/AI</option><option>인프라/DevOps</option>
+          <option>리더십/조직</option><option>커리어/성장</option><option>비즈니스/전략</option>
+          <option>영업/마케팅</option><option>디자인</option><option>기타</option>
         </select>
       </div>
       <div class="form-grid">
         <div class="field"><label>신청자 *</label><input id="req-name" type="text" placeholder="이름"></div>
-        <div class="field"><label>소속 팀</label><select id="req-team"><option value="">팀 선택</option><option>개발팀</option><option>프로덕트팀</option><option>운영팀</option><option>GTM팀</option></select></div>
+        <div class="field"><label>소속 팀</label>
+          <select id="req-team"><option value="">팀 선택</option><option>개발팀</option><option>프로덕트팀</option><option>운영팀</option><option>GTM팀</option></select>
+        </div>
       </div>
       <div class="btn-row"><button class="btn primary" id="req-btn" onclick="submitRequest()">신청하기</button></div>
     </div>
   </div>
+
   <div class="panel" id="panel-admin">
     <div id="admin-lock" style="display:flex;align-items:center;justify-content:center;min-height:260px">
       <div class="card" style="width:320px;text-align:center">
@@ -176,7 +173,22 @@
       </div>
     </div>
   </div>
+
   <div class="panel" id="panel-books">
+    <div style="display:flex;gap:10px;margin-bottom:1rem;flex-wrap:wrap">
+      <input type="text" id="book-search" placeholder="도서명 검색..." style="flex:1;min-width:160px" oninput="renderBooks()">
+      <select id="book-filter" style="width:160px" onchange="renderBooks()">
+        <option value="">전체 카테고리</option>
+        <option>개발</option><option>데이터/AI</option><option>인프라/DevOps</option>
+        <option>리더십/조직</option><option>커리어/성장</option><option>비즈니스/전략</option>
+        <option>영업/마케팅</option><option>디자인</option><option>기타</option>
+      </select>
+      <select id="book-status-filter" style="width:130px" onchange="renderBooks()">
+        <option value="">전체 상태</option>
+        <option value="available">대여 가능</option>
+        <option value="rented">대여 중</option>
+      </select>
+    </div>
     <div class="metrics">
       <div class="met"><div class="met-v" id="cnt-total">—</div><div class="met-l">전체 도서</div></div>
       <div class="met"><div class="met-v" id="cnt-avail" style="color:var(--green-text)">—</div><div class="met-l">대여 가능</div></div>
@@ -189,16 +201,20 @@
       </table>
     </div>
   </div>
+
   <div class="panel" id="panel-rental">
     <div class="card">
       <div class="card-title">대여 신청</div>
+      <div style="font-size:12px;color:var(--text-sub);background:var(--bg);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:14px;line-height:1.8">📌 대여일로부터 <b>60일 이내</b> 반납 부탁드립니다 &nbsp;|&nbsp; 반납 후 <b>7일 이후</b> 재대여 가능 &nbsp;|&nbsp; 1인 최대 <b>5권</b>까지 대여 가능</div>
       <div id="rent-ok" class="alert success"><span id="rent-ok-msg"></span></div>
       <div id="rent-err" class="alert danger"><span id="rent-err-msg"></span></div>
       <div class="form-grid">
         <div class="field"><label>도서 선택 *</label><select id="rent-book"><option value="">불러오는 중...</option></select></div>
         <div class="field"><label>이름 *</label><input id="rent-person" type="text" placeholder="본인 이름"></div>
       </div>
-      <div class="form-grid full field"><label>소속 팀</label><select id="rent-team"><option value="">팀 선택</option><option>개발팀</option><option>프로덕트팀</option><option>운영팀</option><option>GTM팀</option></select></div>
+      <div class="form-grid full field"><label>소속 팀</label>
+        <select id="rent-team"><option value="">팀 선택</option><option>개발팀</option><option>프로덕트팀</option><option>운영팀</option><option>GTM팀</option></select>
+      </div>
       <div class="btn-row"><button class="btn primary" id="rent-btn" onclick="doRent()">대여 신청</button></div>
     </div>
     <div class="divider"></div>
@@ -222,14 +238,17 @@
     </div>
   </div>
 </main>
+
 <script>
 const API='https://script.google.com/a/macros/deepsales.com/s/AKfycbxbYoCd15IQKZKvKSSOZjwdmHLkFShBN5nlSo_4yxmsOLaKkZuS2Lh-Tr1NZVLaltr-WA/exec';
 let cache={requests:[],books:[],rentals:[]};
 const today=()=>new Date().toISOString().split('T')[0];
 const fmt=d=>d?String(d).replace(/-/g,'/'):'—';
 const daysAgo=d=>Math.floor((new Date()-new Date(d))/86400000);
+
 async function apiFetch(p){const r=await fetch(API+'?'+new URLSearchParams(p));return r.json();}
 async function apiPost(b){const r=await fetch(API,{method:'POST',body:JSON.stringify(b)});return r.json();}
+
 async function loadAll(){
   try{
     const d=await apiFetch({action:'getAll'});
@@ -245,16 +264,34 @@ async function loadAll(){
     });
   }
 }
+
 function getRentedIds(){return new Set(cache.rentals.filter(r=>String(r.returned)==='false').map(r=>Number(r.bookId)));}
-function showTab(t,el){document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));el.classList.add('active');document.getElementById('panel-'+t).classList.add('active');}
-function checkDup(){const v=document.getElementById('req-title').value.trim().toLowerCase();const pool=[...cache.requests.map(r=>r.title.toLowerCase()),...cache.books.map(b=>b.title.toLowerCase())];const a=document.getElementById('dup-alert');v.length>1&&pool.some(d=>d.includes(v)||v.includes(d))?a.classList.add('show'):a.classList.remove('show');}
+
+function showTab(t,el){
+  document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('panel-'+t).classList.add('active');
+}
+
+function checkDup(){
+  const v=document.getElementById('req-title').value.trim().toLowerCase();
+  const pool=[...cache.requests.map(r=>r.title.toLowerCase()),...cache.books.map(b=>b.title.toLowerCase())];
+  const a=document.getElementById('dup-alert');
+  v.length>1&&pool.some(d=>d.includes(v)||v.includes(d))?a.classList.add('show'):a.classList.remove('show');
+}
+
 async function submitRequest(){
   const title=document.getElementById('req-title').value.trim();
   const link=document.getElementById('req-link').value.trim();
   const category=document.getElementById('req-category').value;
   const name=document.getElementById('req-name').value.trim();
   const team=document.getElementById('req-team').value;
-  if(!title||!category||!name){if(!title){document.getElementById('req-title').focus();return;}if(!category){document.getElementById('req-category').focus();return;}document.getElementById('req-name').focus();return;}
+  if(!title||!category||!name){
+    if(!title){document.getElementById('req-title').focus();return;}
+    if(!category){document.getElementById('req-category').focus();return;}
+    document.getElementById('req-name').focus();return;
+  }
   const pool=[...cache.requests.map(r=>r.title.toLowerCase()),...cache.books.map(b=>b.title.toLowerCase())];
   if(pool.some(d=>d.includes(title.toLowerCase())||title.toLowerCase().includes(d))){document.getElementById('dup-alert').classList.add('show');return;}
   const btn=document.getElementById('req-btn');btn.disabled=true;btn.textContent='신청 중...';
@@ -266,9 +303,12 @@ async function submitRequest(){
     document.getElementById('req-category').value='';document.getElementById('req-team').value='';
     document.getElementById('dup-alert').classList.remove('show');
     const ok=document.getElementById('req-ok');ok.classList.add('show');setTimeout(()=>ok.classList.remove('show'),3000);
-  }catch(e){document.getElementById('req-err-msg').textContent=e.message;const el=document.getElementById('req-err');el.classList.add('show');setTimeout(()=>el.classList.remove('show'),4000);}
-  finally{btn.disabled=false;btn.textContent='신청하기';}
+  }catch(e){
+    document.getElementById('req-err-msg').textContent=e.message;
+    const el=document.getElementById('req-err');el.classList.add('show');setTimeout(()=>el.classList.remove('show'),4000);
+  }finally{btn.disabled=false;btn.textContent='신청하기';}
 }
+
 function renderAdmin(){
   const c={pending:0,purchased:0,arrived:0};
   cache.requests.forEach(r=>{if(c[r.status]!==undefined)c[r.status]++;});
@@ -284,6 +324,7 @@ function renderAdmin(){
     }).join('')
     :'<tr><td colspan="8" class="empty-state">신청 내역이 없습니다</td></tr>';
 }
+
 async function advance(id,next){
   const r=cache.requests.find(x=>String(x.id)===String(id));if(!r)return;
   const d=today();
@@ -292,24 +333,44 @@ async function advance(id,next){
     if(!res.ok)throw new Error(res.error||'오류');
     r.status=next;
     if(next==='purchased')r.purchaseDate=d;
-    if(next==='arrived'){r.arrivalDate=d;const br=await apiPost({action:'addBook',data:{title:r.title,category:r.category||'미분류',addedDate:d}});if(br.ok)cache.books.push({id:br.id,title:r.title,category:r.category||'미분류',addedDate:d});}
+    if(next==='arrived'){
+      r.arrivalDate=d;
+      const br=await apiPost({action:'addBook',data:{title:r.title,category:r.category||'미분류',addedDate:d}});
+      if(br.ok)cache.books.push({id:br.id,title:r.title,category:r.category||'미분류',addedDate:d});
+    }
     renderAdmin();renderBooks();renderRental();
-  }catch(e){document.getElementById('admin-err-msg').textContent=e.message;const el=document.getElementById('admin-err');el.classList.add('show');setTimeout(()=>el.classList.remove('show'),4000);}
+  }catch(e){
+    document.getElementById('admin-err-msg').textContent=e.message;
+    const el=document.getElementById('admin-err');el.classList.add('show');setTimeout(()=>el.classList.remove('show'),4000);
+  }
 }
+
 function renderBooks(){
   const rented=getRentedIds();
   document.getElementById('cnt-total').textContent=cache.books.length;
   document.getElementById('cnt-avail').textContent=cache.books.filter(b=>!rented.has(Number(b.id))).length;
   document.getElementById('cnt-out').textContent=cache.books.filter(b=>rented.has(Number(b.id))).length;
-  document.getElementById('books-tbody').innerHTML=cache.books.length
-    ?cache.books.map(b=>{
+  const search=(document.getElementById('book-search')||{value:''}).value.trim().toLowerCase();
+  const catFilter=(document.getElementById('book-filter')||{value:''}).value;
+  const statusFilter=(document.getElementById('book-status-filter')||{value:''}).value;
+  const filtered=cache.books.filter(b=>{
+    const out=rented.has(Number(b.id));
+    if(search&&!b.title.toLowerCase().includes(search))return false;
+    if(catFilter&&b.category!==catFilter)return false;
+    if(statusFilter==='available'&&out)return false;
+    if(statusFilter==='rented'&&!out)return false;
+    return true;
+  });
+  document.getElementById('books-tbody').innerHTML=filtered.length
+    ?filtered.map(b=>{
       const out=rented.has(Number(b.id));
       const rental=cache.rentals.find(r=>String(r.bookId)===String(b.id)&&String(r.returned)==='false');
       const clickable=!out?'style="font-weight:500;color:var(--blue-text);cursor:pointer;text-decoration:underline" onclick="goToRent(\''+b.id+'\')"':'style="font-weight:500"';
       return '<tr><td '+clickable+'>'+b.title+'</td><td>'+b.category+'</td><td>'+fmt(b.addedDate)+'</td><td>'+(out?'<span class="badge b-amber">대여 중</span>':'<span class="badge b-green">대여 가능</span>')+'</td><td>'+(rental?rental.person+'<div class="sub-text">'+(rental.team||'')+'</div>':'—')+'</td></tr>';
     }).join('')
-    :'<tr><td colspan="5" class="empty-state">등록된 도서가 없습니다</td></tr>';
+    :'<tr><td colspan="5" class="empty-state">검색 결과가 없습니다</td></tr>';
 }
+
 function renderRental(){
   const rented=getRentedIds();
   const avail=cache.books.filter(b=>!rented.has(Number(b.id)));
@@ -326,17 +387,39 @@ function renderRental(){
     }).join('')
     :'<tr><td colspan="6" class="empty-state">대여 내역이 없습니다</td></tr>';
 }
+
 function filterMyRentals(){
   const name=document.getElementById('return-person').value.trim();
   const mine=cache.rentals.filter(r=>String(r.returned)==='false'&&r.person===name);
   document.getElementById('return-book').innerHTML=mine.length?mine.map(r=>'<option value="'+r.id+'">'+r.bookTitle+'</option>').join(''):'<option value="">대여 중인 도서 없음</option>';
 }
+
 async function doRent(){
   const bookId=document.getElementById('rent-book').value;
   const person=document.getElementById('rent-person').value.trim();
   const team=document.getElementById('rent-team').value;
   if(!bookId||!person){if(!person)document.getElementById('rent-person').focus();return;}
   const book=cache.books.find(b=>String(b.id)===String(bookId));if(!book)return;
+
+  const errEl=document.getElementById('rent-err');
+  const errMsg=document.getElementById('rent-err-msg');
+  function showErr(msg){errMsg.textContent=msg;errEl.classList.add('show');setTimeout(()=>errEl.classList.remove('show'),4000);}
+
+  // 중복 대여 방지
+  if(cache.rentals.find(r=>String(r.bookId)===String(bookId)&&String(r.returned)==='false')){
+    showErr('이미 다른 사람이 대여 중인 도서입니다.');return;
+  }
+  // 5권 제한
+  if(cache.rentals.filter(r=>String(r.returned)==='false'&&r.person===person).length>=5){
+    showErr('1인 최대 5권까지만 대여할 수 있습니다.');return;
+  }
+  // 7일 재대여 제한
+  const lastReturn=cache.rentals.filter(r=>String(r.bookId)===String(bookId)&&String(r.returned)==='true'&&r.person===person).sort((a,b)=>new Date(b.returnDate)-new Date(a.returnDate))[0];
+  if(lastReturn&&lastReturn.returnDate){
+    const daysSince=Math.floor((new Date()-new Date(lastReturn.returnDate))/86400000);
+    if(daysSince<7){showErr('반납 후 7일 이후 재대여 가능합니다. ('+(7-daysSince)+'일 남음)');return;}
+  }
+
   const btn=document.getElementById('rent-btn');btn.disabled=true;btn.textContent='처리 중...';
   try{
     const res=await apiPost({action:'addRental',data:{bookId,bookTitle:book.title,person,team:team||'미기재',rentDate:today()}});
@@ -346,9 +429,10 @@ async function doRent(){
     document.getElementById('rent-ok-msg').textContent='"'+book.title+'" 대여가 완료되었습니다.';
     const ok=document.getElementById('rent-ok');ok.classList.add('show');setTimeout(()=>ok.classList.remove('show'),3000);
     renderRental();renderBooks();
-  }catch(e){document.getElementById('rent-err-msg').textContent=e.message;const el=document.getElementById('rent-err');el.classList.add('show');setTimeout(()=>el.classList.remove('show'),4000);}
+  }catch(e){showErr(e.message);}
   finally{btn.disabled=false;btn.textContent='대여 신청';}
 }
+
 async function doReturn(){
   const rentalId=document.getElementById('return-book').value;if(!rentalId)return;
   const r=cache.rentals.find(x=>String(x.id)===String(rentalId));if(!r)return;
@@ -361,14 +445,18 @@ async function doReturn(){
     document.getElementById('return-book').innerHTML='<option value="">이름을 먼저 입력하세요</option>';
     const ok=document.getElementById('return-ok');ok.classList.add('show');setTimeout(()=>ok.classList.remove('show'),3000);
     renderRental();renderBooks();
-  }catch(e){document.getElementById('return-err-msg').textContent=e.message;const el=document.getElementById('return-err');el.classList.add('show');setTimeout(()=>el.classList.remove('show'),4000);}
-  finally{btn.disabled=false;btn.textContent='반납 신청';}
+  }catch(e){
+    document.getElementById('return-err-msg').textContent=e.message;
+    const el=document.getElementById('return-err');el.classList.add('show');setTimeout(()=>el.classList.remove('show'),4000);
+  }finally{btn.disabled=false;btn.textContent='반납 신청';}
 }
+
 function goToRent(bookId){
   const tab=document.querySelector('.tab-btn:nth-child(4)');
   showTab('rental',tab);
   setTimeout(()=>{document.getElementById('rent-book').value=bookId;},50);
 }
+
 function checkAdminPw(){
   const pw=document.getElementById('admin-pw').value;
   if(pw==='0619'){
@@ -382,6 +470,7 @@ function checkAdminPw(){
     document.getElementById('admin-pw').focus();
   }
 }
+
 loadAll();
 </script>
 </body>
