@@ -256,7 +256,7 @@ async function loadAll(){
     cache.requests=d.requests||[];cache.books=d.books||[];cache.rentals=d.rentals||[];
     const now=new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
     document.getElementById('last-updated').textContent='마지막 업데이트 '+now;
-    renderBooks();renderRental();
+    renderAdmin();renderBooks();renderRental();
   }catch(e){
     ['admin-tbody','books-tbody','rental-tbody'].forEach(id=>{
       const el=document.getElementById(id);
