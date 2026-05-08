@@ -278,7 +278,7 @@ function checkDup(){
   const v=document.getElementById('req-title').value.trim().toLowerCase();
   const pool=[...cache.requests.map(r=>r.title.toLowerCase()),...cache.books.map(b=>b.title.toLowerCase())];
   const a=document.getElementById('dup-alert');
-  v.length>1&&pool.some(d=>d.includes(v)||v.includes(d))?a.classList.add('show'):a.classList.remove('show');
+  pool.some(d=>d===v)?a.classList.add('show'):a.classList.remove('show');
 }
 
 async function submitRequest(){
