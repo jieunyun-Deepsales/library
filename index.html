@@ -293,7 +293,7 @@ async function submitRequest(){
     document.getElementById('req-name').focus();return;
   }
   const pool=[...cache.requests.map(r=>r.title.toLowerCase()),...cache.books.map(b=>b.title.toLowerCase())];
-  if(pool.some(d=>d.includes(title.toLowerCase())||title.toLowerCase().includes(d))){document.getElementById('dup-alert').classList.add('show');return;}
+  if(pool.some(d=>d===title.toLowerCase())){document.getElementById('dup-alert').classList.add('show');return;}
   const btn=document.getElementById('req-btn');btn.disabled=true;btn.textContent='신청 중...';
   try{
     const res=await apiPost({action:'addRequest',data:{title,link,category:category||'미분류',requester:name,team:team||'미기재',reqDate:today()}});
