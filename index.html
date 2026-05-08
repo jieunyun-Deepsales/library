@@ -243,7 +243,7 @@
 const API='https://script.google.com/a/macros/deepsales.com/s/AKfycbxbYoCd15IQKZKvKSSOZjwdmHLkFShBN5nlSo_4yxmsOLaKkZuS2Lh-Tr1NZVLaltr-WA/exec';
 let cache={requests:[],books:[],rentals:[]};
 const today=()=>new Date().toISOString().split('T')[0];
-const fmt=d=>d?String(d).replace(/-/g,'/'):'—';
+const fmt=d=>d?String(d).slice(0,10).replace(/-/g,'/'):'—';
 const daysAgo=d=>Math.floor((new Date()-new Date(d))/86400000);
 
 async function apiFetch(p){const r=await fetch(API+'?'+new URLSearchParams(p));return r.json();}
