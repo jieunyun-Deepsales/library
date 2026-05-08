@@ -242,7 +242,7 @@
 <script>
 const API='https://script.google.com/macros/s/AKfycbxgpNbU0tMaL1cc-pZP8Gmek2e_iqiJ9Y4Z7N8apRz5IUzHr5TP-B7Qsxt5aififuIFaA/exec';
 let cache={requests:[],books:[],rentals:[]};
-const today=()=>new Date().toISOString().split('T')[0];
+const today=()=>new Date(new Date().getTime()+9*60*60*1000).toISOString().split('T')[0];
 const fmt=d=>d?String(d).slice(0,10).replace(/-/g,'/'):'—';
 const daysAgo=d=>Math.floor((new Date()-new Date(d))/86400000);
 
